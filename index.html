@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Payment Fraud Detection</title>
+  <style>
+    /* General */
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #74ebd5, #ACB6E5);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      background-color: white;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    header h1 {
+      margin: 0;
+      color: #2c3e50;
+      font-size: 26px;
+    }
+
+    /* Container */
+    .container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    /* Page Boxes */
+    .page {
+      background: white;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 5px 25px rgba(0,0,0,0.15);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+      display: none;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+    .active-page {
+      display: block;
+    }
+
+    /* Inputs and Buttons */
+    input, select {
+      width: 100%;
+      margin: 12px 0;
+      padding: 12px;
+      font-size: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+    input:focus, select:focus {
+      border-color: #3498db;
+    }
+    button {
+      width: 100%;
+      padding: 14px;
+      font-size: 16px;
+      background: linear-gradient(90deg, #36D1DC, #5B86E5);
+      border: none;
+      border-radius: 25px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: linear-gradient(90deg, #5B86E5, #36D1DC);
+    }
+
+    /* Result text */
+    #result-text {
+      margin-top: 30px;
+      font-size: 24px;
+      font-weight: bold;
+    }
+    .success {
+      color: green;
+    }
+    .error {
+      color: red;
+    }
+
+    /* Animation */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>Payment Fraud Detection System</h1>
+</header>
+
+<div class="container">
+
+  <!-- Login Page -->
+  <div id="loginPage" class="page active-page">
+    <h2>Login</h2>
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="handleLogin()">Login</button>
+  </div>
+
+  <!-- Upload Dataset Page -->
+  <div id="uploadPage" class="page">
+    <h2>Upload Dataset</h2>
+    <input type="file" id="dataset" accept=".csv, .xlsx">
+    <button onclick="handleUpload()">Upload & Analyze</button>
+  </div>
+
+  <!-- Transaction Details Page -->
+  <div id="transactionPage" class="page">
+    <h2>Transaction Details</h2>
+
+    <input type="text" id="transactionId" placeholder="Transaction ID">
+    <input type="number" id="transactionAmount" placeholder="Transaction Amount">
+
+    <select id="transactionType">
+      <option value="">Select Transaction Type</option>
+      <option value="Credit">Credit</option>
+      <option value="Debit">Debit</option>
+    </select>
+
+    <input type="text" id="location" placeholder="Location">
+
+    <select id="paymentMethod">
+      <option value="">Select Payment Method</option>
+      <option value="UPI">UPI</option>
+      <option value="Credit Card">Credit Card</option>
+      <option value="Debit Card">Debit Card</option>
+      <option value="Net Banking">Net Banking</option>
+      <option value="Wallet">Wallet</option>
+      <option value="Others">Others</option>
+    </select>
+
+    <button onclick="detectFraud()">Detect Fraud</button>
+  </div>
+
+  <!-- Result Page -->
+  <div id="resultPage" class="page">
+    <h2>Result</h2>
+    <div id="result-text"></div>
+    <button onclick="restart()">Restart</button>
+  </div>
+
+</div>
+
+<script>
+  function showPage(pageId) {
+    document.querySelectorAll('.page').forEach(page => {
+      page.classList.remove('active-page');
+    });
+    document.getElementById(pageId).classList.add('active-page');
+  }
+
+  function handleLogin() {
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
+    if (username === "admin" && password === "admin") {
+      alert("Login Successful!");
+      showPage('uploadPage');
+    } else {
+      alert("Invalid credentials. Try again.");
+    }
+  }
+
+  function handleUpload() {
+    const file = document.getElementById('dataset').files[0];
+    if (file) {
+      alert("Dataset uploaded and analyzed successfully!");
+      showPage('transactionPage');
+    } else {
+      alert("Please upload a dataset file!");
+    }
+  }
+
+  function detectFraud() {
+    const transactionId = document.getElementById('transactionId').value.trim();
+    const transactionAmount = document.getElementById('transactionAmount').value.trim();
+    const transactionType = document.getElementById('transactionType').value;
+    const location = document.getElementById('location').value.trim();
+    const paymentMethod = document.getElementById('paymentMethod').value;
+
+    if (!transactionId || !transactionAmount || !transactionType || !location || !paymentMethod) {
+      alert("Please fill all the fields!");
+      return;
+    }
+
+    // Simulating fraud detection randomly
+    const randomOutcome = Math.random() > 0.5 ? 'Valid Transaction' : 'Fraudulent Transaction';
+    const resultText = document.getElementById('result-text');
+    resultText.innerText = randomOutcome;
+    resultText.className = randomOutcome === 'Valid Transaction' ? 'success' : 'error';
+    showPage('resultPage');
+  }
+
+  function restart() {
+    document.getElementById('username').value = "";
+    document.getElementById('password').value = "";
+    document.getElementById('dataset').value = "";
+    document.getElementById('transactionId').value = "";
+    document.getElementById('transactionAmount').value = "";
+    document.getElementById('transactionType').value = "";
+    document.getElementById('location').value = "";
+    document.getElementById('paymentMethod').value = "";
+    showPage('loginPage');
+  }
+</script>
+
+</body>
+</html>
